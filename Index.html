@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر الكاسكيطات</title>
+
+<style>
+body {font-family: Arial; margin:0; background:#f5f5f5;}
+
+header {
+    background:#111;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+}
+
+.search {
+    text-align:center;
+    margin:15px;
+}
+
+.search input {
+    width:80%;
+    padding:10px;
+    border-radius:5px;
+    border:1px solid #ccc;
+}
+
+.container {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.card {
+    background:white;
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
+    width:200px;
+    text-align:center;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.card img {width:100%; border-radius:10px;}
+
+.price {color:green; font-weight:bold;}
+
+button {
+    background:#111;
+    color:white;
+    border:none;
+    padding:8px;
+    margin-top:5px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.cart-btn {
+    position:fixed;
+    top:10px;
+    right:10px;
+    background:#25D366;
+    color:white;
+    padding:10px;
+    border-radius:50px;
+    cursor:pointer;
+}
+
+.cart-box {
+    position:fixed;
+    bottom:0;
+    right:0;
+    background:white;
+    width:100%;
+    max-height:400px;
+    overflow:auto;
+    display:none;
+    border-top:2px solid black;
+    padding:10px;
+}
+
+input, select {
+    width:95%;
+    padding:8px;
+    margin:5px;
+}
+
+.total {
+    font-weight:bold;
+    margin:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>🧢 متجر الكاسكيطات</header>
+
+<div class="search">
+<input type="text" placeholder="ابحث..." onkeyup="searchProduct(this.value)">
+</div>
+
+<div class="cart-btn" onclick="toggleCart()">🛒</div>
+
+<div class="container" id="products"></div>
+
+<div class="cart-box" id="cartBox">
+<h3>🛒 السلة</h3>
+
+<div id="cartItems"></div>
+
+<p class="total" id="total"></p>
+
+<h4>📦 معلوماتك</h4>
+<input type="text" id="name" placeholder="الاسم">
+<input type="text" id="phone" placeholder="رقم الهاتف">
+
+<select id="state">
+<option>اختر الولاية</option>
+<option>الجزائر</option>
+<option>البليدة</option>
+<option>وهران</option>
+<option>قسنطينة</option>
+</select>
+
+<select id="payment">
+<option>الدفع عند الاستلام</option>
+</select>
+
+<button onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
+
+</div>
+
+<script>
+let products = [
+{name:"Nike", price:2500, img:"https://via.placeholder.com/200"},
+{name:"Adidas", price:2200, img:"https://via.placeholder.com/200"},
+{name:"Puma", price:2000, img:"https://via.placeholder.com/200"}
+];
+
+let cart=[];
+
+function displayProducts(list){
+let html="";
+list.forEach((p,i)=>{
+html+=`
+<div class="card">
+<img src="${p.img}">
+<h3>${p.name}</h3>
+<p class="price">${p.price} دج</p>
+<button onclick="addToCart(${i})">أضف للسلة</button>
+</div>`;
+});
+document.getElementById("products").innerHTML=html;
+}
+
+function addToCart(i){
+cart.push(products[i]);
+updateCart();
+}
+
+function removeItem(index){
+cart.splice(index,1);
+updateCart();
+}
+
+function updateCart(){
+let html="";
+let total=0;
+
+cart.forEach((p,i)=>{
+total+=p.price;
+html+=`<p>${p.name} - ${p.price} دج 
+<button onclick="removeItem(${i})">❌</button></p>`;
+});
+
+document.getElementById("cartItems").innerHTML=html;
+document.getElementById("total").innerText="المجموع: "+total+" دج";
+}
+
+function toggleCart(){
+let box=document.getElementById("cartBox");
+box.style.display=box.style.display==="block"?"none":"block";
+}
+
+function sendOrder(){
+let name=document.getElementById("name").value;
+let phoneUser=document.getElementById("phone").value;
+let state=document.getElementById("state").value;
+
+let phone="213XXXXXXXXX"; // رقمك
+
+let msg="🧢 طلب جديد:%0A";
+msg+="👤 الاسم: "+name+"%0A";
+msg+="📞 الهاتف: "+phoneUser+"%0A";
+msg+="📍 الولاية: "+state+"%0A%0A";
+
+cart.forEach(p=>{
+msg+=p.name+" - "+p.price+" دج%0A";
+});
+
+window.open("https://wa.me/"+phone+"?text="+msg);
+}
+
+function searchProduct(v){
+let f=products.filter(p=>p.name.toLowerCase().includes(v.toLowerCase()));
+displayProducts(f);
+}
+
+displayProducts(products);
+</script>
+
+</body>
+</html>
